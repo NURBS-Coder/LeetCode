@@ -14,15 +14,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	int nums[6] = {-1, 0, 1, 2, -1, -4};
 	vector<int> h(nums, nums+6);
-	vector<vector<int>> ans = threeSum(h);
-	for (int i = 0; i < ans.size(); i++)
-	{
-		for (int j = 0; j < ans[i].size(); j++)
-		{
-			cout << ans[i][j] << "\t";
-		}
-		cout << endl;
-	}
+	int ans = threeSumClosest(h, 1);
+	cout << ans << endl;
+
 	getchar();
 	return 0;
 }

@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <vector>
-
+#include <set>
 /////////////////////////////////////////题目解答/////////////////////////////////////////
 
 //*********************************11. 盛最多水的容器【双指针】
@@ -57,7 +57,7 @@ int maxArea(vector<int>& height)
 	return ans;
 }
 
-//*********************************12. 整数转罗马数字【】
+//*********************************12. 整数转罗马数字【贪心】
 /*
 int a = 3;
 string str = intToRoman(a);
@@ -66,7 +66,7 @@ cout << str << endl;
 string intToRoman(int num)
 {
 	string ans;
-//*
+/*
 	int len = 0;
 	while (num > 0)
 	{
@@ -195,10 +195,38 @@ string intToRoman(int num)
 	}
 //*/
 
+//*
+	map<int,string> R;
+	R[1] = "I";
+	R[4] = "IV";
+	R[5] = "V";
+	R[9] = "IX";
+	R[10] = "X";
+	R[40] = "XL";
+	R[50] = "L";
+	R[90] = "XC";
+	R[100] = "C";
+	R[400] = "CD";
+	R[500] = "D";
+	R[900] = "CM";
+	R[1000] = "M";
+
+	for (auto iter = R.rbegin(); iter != R.rend(); ++iter)
+	{
+		//从大到小，每次都取能满足的最大的
+		while (iter->first <= num)
+		{
+			ans += iter->second;
+			num -= iter->first;
+		}
+	}
+
+//*/
+
 	return ans;
 }
 
-//*********************************13. 罗马数字转整数【】
+//*********************************13. 罗马数字转整数【哈希表】
 /*
 string str = "MCMXCIV";
 int n = romanToInt(str);
@@ -236,7 +264,7 @@ int romanToInt(string s)
 	return ans;
 }
 
-//*********************************14. 最长公共前缀【】
+//*********************************14. 最长公共前缀【横向查找、纵向查找、分值、二分】
 /*
 //描述：编写一个函数来查找字符串数组中的最长公共前缀。
 		如果不存在公共前缀，返回空字符串 ""。
@@ -274,7 +302,7 @@ string longestCommonPrefix(vector<string>& strs)
 	return ans;
 }
 
-//*********************************15. 三数之和【】
+//*********************************15. 三数之和【双指针】
 /*
 //描述：给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
   注意：答案中不可以包含重复的三元组。
@@ -293,7 +321,98 @@ for (int i = 0; i < ans.size(); i++)
 vector<vector<int>> threeSum(vector<int>& nums) 
 {
 	vector<vector<int>> ans;
+	sort(nums.begin(),nums.end());
+	int size = nums.size();
+	
+/*  //超时
+	set<vector<int>> a;
+	for (int i = 0; i < size - 2; i++)
+	{
+		for (int j = i + 1; j < size - 1; j++)
+		{
+			for (int k = j + 1; k < size; k++)
+			{
+				if (nums[i] + nums[j] + nums[k] == 0)
+				{
+					vector<int> temp;
+					temp.push_back(nums[i]);
+					temp.push_back(nums[j]);
+					temp.push_back(nums[k]);
+					a.insert(temp);
+				}
+			}
+		}
+	}
 
+	for (auto aa : a)
+	{
+		ans.push_back(aa);
+	}
+//*/
+
+///*  //优化循环【双指针】
+	//i是第一个数a
+	for (int i = 0; i < size; i++)
+	{
+		//去重，a不能和之前的一样
+		if (i > 0 && nums[i] == nums[i-1])
+		{
+			continue;	//减少循环
+		}
+
+		//k是第三个数c，从右往左
+		int k = size - 1;
+
+		//j是第二个数b，从左往右
+		for (int j = i + 1; j < size; j++)
+		{
+			//去重，b不能和之前的一样
+			if (j > i + 1 && nums[j] == nums[j-1])
+			{
+				continue;	//减少循环
+			}
+
+			while (j < k && nums[i] + nums[j] + nums[k] > 0)
+			{
+				k--;		//nums是有序的，所以随着j增加，k应该减小，找到临界的k
+			}
+
+			if (j == k)
+			{
+				break;		//指针重合都没有合适的,下一循环
+			}
+
+			if (nums[i] + nums[j] + nums[k] == 0)
+			{
+				vector<int> temp;
+				temp.push_back(nums[i]);
+				temp.push_back(nums[j]);
+				temp.push_back(nums[k]);
+				ans.push_back(temp);
+			}
+		}
+	}
+//*/
+	return ans;
+}
+
+//*********************************16. 最接近的三数之和【】
+/*
+//描述：给定一个包括 n 个整数的数组 nums 和 一个目标值 target。找出 nums 中的三个整数，使得它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
+int nums[6] = {-1, 0, 1, 2, -1, -4};
+vector<int> h(nums, nums+6);
+int ans = threeSumClosest(h, 1);
+cout << ans << endl;
+//*/
+int threeSumClosest(vector<int>& nums, int target) 
+{
+	int ans = 0;
+	sort(nums.begin(),nums.end());
+	int size = nums.size();
+
+///*  
+
+//*/
 
 	return ans;
 }
