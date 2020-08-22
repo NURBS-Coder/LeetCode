@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "Solution[001-010].hpp"
 #include "Solution[011-020].hpp"
+#include "Solution[021-030].hpp"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -12,12 +13,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	//bool m = isMatch(s, p);
 	//cout << m << endl;
 
-	int nums[6] = {-1, 0, 1, 2, -1, -4};
-	vector<int> h(nums, nums+6);
-	int ans = threeSumClosest(h, 1);
+	int ans = divide(INT_MIN, -1);
 	cout << ans << endl;
 
-	getchar();
+	int ret = getchar();
 	return 0;
 }
 

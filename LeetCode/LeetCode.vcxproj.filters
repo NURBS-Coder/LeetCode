@@ -30,6 +30,9 @@
     <ClInclude Include="Solution[011-020].hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Solution[021-030].hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -37,6 +40,9 @@
     </ClCompile>
     <ClCompile Include="LeetCode.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Public.hpp">
+      <Filter>头文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

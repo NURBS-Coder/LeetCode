@@ -1,4 +1,5 @@
-﻿#include <map>
+﻿#include "Public.hpp"
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -143,7 +144,7 @@ vector<int> twoSum(vector<int>& nums, int target)
 	//时间复杂度O（n），空间复杂度O（n）
 ///*
 	unordered_map<int,int>hashmap;
-    for(int i=0;i<nums.size();i++)
+    for(size_t i=0;i<nums.size();i++)
 	{
 		//查看target-nums[i]在表中的值<nums中nums[i]的下标>
 		//不为零<target-nums[i]存在于表中，也就是曾经有一个nums[i]等于target-nums[i]>
@@ -182,11 +183,6 @@ a2.next = &b2;
 b2.next = &c2;
 addTwoNumbers(&a1, &a2); 
 //*/
-struct ListNode {
-	int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(NULL) {}
-};
 ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) 
 {
 	ListNode *ret = new ListNode(0);
