@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <functional>
 #include <queue>
+#include <unordered_set>
 /////////////////////////////////////////题目解答/////////////////////////////////////////
 
 //*********************************21. 合并两个有序链表【迭代、递归】
@@ -414,7 +415,7 @@ int removeElement(vector<int>& nums, int val)
 
 }
 
-//*********************************28. 实现 strStr()【】
+//*********************************28. 实现 strStr()【不科学】
 /*
 //描述：实现 strStr() 函数。
 		给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
@@ -452,7 +453,7 @@ int strStr(string haystack, string needle)
 	return ans;
 }
 
-//*********************************29. 两数相除【】
+//*********************************29. 两数相除【位移运算】
 /*
 //描述：给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
         返回被除数 dividend 除以除数 divisor 得到的商。
@@ -460,40 +461,107 @@ int strStr(string haystack, string needle)
 	cout << ans << endl;
 //*/
 //*//*/
-int divide(int dividend, int divisor) 
+
+long long multiple(int num1, int num2)
 {
-	int sign = -1;
-	if (dividend < 0 && divisor < 0 || 
-		dividend > 0 && divisor > 0)
-	{
-		sign = 1;
-	}
-
-	int ans = 0;
-	dividend = -abs(dividend);
-	divisor = -abs(divisor);
-
-	if (dividend > divisor)
+	if (num1 == 0 || num2 == 0)
 	{
 		return 0;
 	}
 
-	while (dividend <= divisor)
-	{
+	bool sign = false;
+	if (num1 < 0 && num2 < 0 ||
+		num1 > 0 && num2 > 0)
+	{   //记录结果符号
+		sign = true;
+	}
+	long long first  = abs((long long)num1);
+	long long second = abs((long long)num2);
 
-		ans -= 1;
-		dividend -= divisor;
+	if (first < second)
+	{   //操作小的num2，逐位判断
+		long long temp = first;
+		first = second;
+		second = temp;
 	}
 
-	ans = sign == 1 ? -ans : ans;
-	return ans;
+	long long ans = 0;
+	for (size_t i = 0; i < 32; i++)
+	{	//从低位取值
+		bool isOne = (second >> i) & 0x01;
+		if (isOne)
+		{
+			ans += first << i;
+		}
+	}
+
+	return sign ? ans : -ans;
+}
+int divide(int dividend, int divisor) 
+{
+	if (dividend == 0 || divisor == 1)
+	{
+		return dividend;
+	}
+
+	if (divisor == -1)
+	{
+		if (dividend == INT_MIN)
+		{
+			return INT_MAX;
+		}
+		else
+		{
+			return -dividend;
+		}
+	}
+
+	bool sign = false;
+	if (dividend < 0 && divisor < 0 ||
+		dividend > 0 && divisor > 0)
+	{   //记录结果符号
+		sign = true;
+	}
+
+	long long first = abs((long long)dividend);
+	long long second = abs((long long)divisor);
+
+	if (first < second)
+	{
+		return 0;
+	}
+
+	long long bit_sum = 1;
+	int first_bit_count = 0;
+	while (bit_sum <= first)
+	{   //获取dividend位数
+		bit_sum <<= 1;
+		++first_bit_count;
+	}
+
+	long long ans = 0;
+	long long remainder = 0;
+	while (first_bit_count--)
+	{
+		bit_sum >>= 1;
+		remainder <<= 1;
+		remainder |= (first >> first_bit_count) & 0x01;
+		if (remainder >= second)
+		{
+			remainder -= second;
+			ans |= bit_sum;
+		}
+	}
+	
+	return sign ? ans : -ans;
 }
 
-//*********************************30. 串联所有单词的子串【】
+//*********************************30. 串联所有单词的子串【滑动窗口】
 /*
 //描述：给定一个字符串 s 和一些长度相同的单词 words。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
 		注意子串要与 words 中的单词完全匹配，中间不能有其他字符，但不需要考虑 words 中单词串联的顺序。
-	vector<int> ans = findSubstring("barfoothefoobarman", {"foo","bar"});
+	vector<string> str = { "foo","bar" };
+	vector<int> ans = findSubstring("barfoothefoobarman", str);
 	for (auto i : ans)
 	{
 		cout << i << endl;
@@ -503,7 +571,91 @@ int divide(int dividend, int divisor)
 vector<int> findSubstring(string s, vector<string>& words) 
 {
 	vector<int> ans;
-	
+//*
+	if (s.empty() || words.empty())
+	{
+		return ans;
+	}
+
+	int s_size = s.size();
+	int words_size = words.size();
+	int one_size = words[0].size();
+	int len = words_size * one_size;
+
+	unordered_map<string, int> map1;
+	for (const auto& element : words)
+	{
+		map1[element]++;
+	}
+
+	int i = 0;
+	unordered_map<string, int> map2;
+	while (i < one_size)
+	{
+		int first = i;
+		int second = i;
+		int count = 0;
+		map2.clear();
+		while (second + one_size <= s_size)
+		{
+			string strsub = s.substr(second, one_size);
+			second += one_size;
+			if (map1.count(strsub) == 0)
+			{
+				map2.clear();
+				first = second;
+				count = 0;
+			}
+			else
+			{
+				map2[strsub]++;
+				count++;
+				while (map2[strsub] > map1[strsub])
+				{
+					string tt = s.substr(i, one_size);
+					--count;
+					--map2[tt];
+					first += one_size;
+				}
+			}
+
+			if (count == words_size)
+			{
+				ans.push_back(i);
+			}
+		}
+		++i;
+	}
+
+//*/
+/*
+	vector<int> res;
+	if (!words.size()) return res;
+	int n = s.size(), m = words.size(), w = words[0].size();
+	unordered_map<string, int> hash;
+	for (const auto& item : words) hash[item] ++;
+
+	for (int i = 0; i <= w - 1; i++)
+	{
+		unordered_map<string, int> wd;
+		int cnt = 0;
+		for (int j = i; j + w <= n; j += w)
+		{
+			if (j >= m * w)
+			{
+				auto word = s.substr(j - m * w, w);
+				wd[word] --;
+				if (wd[word] < hash[word]) cnt--;
+			}
+
+			auto word = s.substr(j, w);
+			wd[word] ++;
+			if (wd[word] <= hash[word]) cnt++;
+
+			if (cnt == m) res.push_back(j - (m - 1) * w);
+		}
+	}
+//*/
 
 	return ans;
 }
