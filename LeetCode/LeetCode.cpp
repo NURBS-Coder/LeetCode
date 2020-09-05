@@ -13,12 +13,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//bool m = isMatch(s, p);
 	//cout << m << endl;
 
-	vector<string> str = { "fooo", "barr", "wing", "ding", "wing" };
-	vector<int> ans = findSubstring("lingmindraboofooowingdingbarrwingmonkeypoundcake", str);
-	for (auto i : ans)
-	{
-		cout << i << endl;
-	}
+
 
 	int ret = getchar();
 	return 0;

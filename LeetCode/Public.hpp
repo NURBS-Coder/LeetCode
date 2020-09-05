@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #ifndef _PUBLIC_HPP_
 #define _PUBLIC_HPP_
 
