@@ -23,7 +23,7 @@
     <ClInclude Include="Public.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Solution[01-10].hpp">
+    <ClInclude Include="Solution.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

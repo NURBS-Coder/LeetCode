@@ -2,11 +2,11 @@
 //
 
 #include <iostream>
-#include "Solution[01-10].hpp"
+#include "Solution.hpp"
 
 int main()
 {
-    string ans = replaceSpace("We are happy.");
+    int ans = cuttingRope(1000);
     cout << ans << endl;
     
     return 0;
