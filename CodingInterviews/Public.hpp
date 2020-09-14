@@ -7,18 +7,19 @@
 #include <functional>
 #include <unordered_map>
 #include <queue>
+#include <string>
 
-struct ListNode { //06
+struct ListNode { //06¡¢18¡¢22
 	int val;
 	ListNode* next;
-	ListNode(int x) : val(x), next(nullptr) {}
+	ListNode(int x, ListNode* nex = nullptr) : val(x), next(nex) {}
 };
 
-struct TreeNode { //07
+struct TreeNode { //07¡¢26
 	int val;
 	TreeNode* left;
 	TreeNode* right;
-	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+	TreeNode(int x, TreeNode* lef = nullptr, TreeNode* righ = nullptr) : val(x), left(lef), right(righ) {}
 };
 
 #endif // !_PUBLIC_HPP_

@@ -601,7 +601,7 @@ int movingCount(int m, int n, int k) {
 }
 
 //*********************************剑指 Offer 14 - I.剪绳子【数论、动态规划】
-//*********************************剑指 Offer 14- II.剪绳子 II【】
+//*********************************剑指 Offer 14- II.剪绳子 II【循环求余】
 /*
 //描述：给你一根长度为 n 的绳子
         请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1）
@@ -669,6 +669,530 @@ int cuttingRope(int n)
 
     return dp.back();
 //*/
+}
+
+//*********************************剑指 Offer 15. 二进制中1的个数【巧用位移】
+/*
+//描述：
+int ans = hammingWeight(nums);
+cout << ans << endl;
+//*/
+//*//*/
+int hammingWeight(uint32_t n) 
+{
+    int ans = 0;
+
+    while (n > 0)
+    {
+/*
+        ans += (n % 2);
+        n /= 2;
+//*/
+/*
+        ans += (n & 1);
+        n >>= 1;
+//*/
+//*
+    //n & (n-1)-->消去最后一位1
+        ++ans;
+        n &= (n - 1);
+//*/
+    }
+    return ans;
+}
+
+//*********************************剑指 Offer 16. 数值的整数次方【快速幂法】
+/*
+//描述：实现函数double Power(double base, int exponent)，求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。
+double ans = myPow(base, exponent);
+cout << ans << endl;
+//*/
+//*//*/
+double myPow(double x, int n) 
+{
+ /*
+    //超时,时间复杂度为 O(n)
+    double ans = 1;
+    bool flag = false;
+    if (n < 0)
+    {
+        flag = true;
+        n *= -1;
+    }
+    while (n--)
+    {
+        ans *= x;
+    }
+    return flag ? 1 / ans : ans;
+//*/
+/*
+    //快速幂法：(n/2都是整数除，可以用n>>1)--->递归
+    //n为偶数：取f(n) = f(n/2)*f(n/2);
+    //n为奇数：取f(n) = x*f(n/2)*f(n/2);
+    long long N = abs((long long)n); //注意负数【-2^31】取绝对值的问题！！！
+    function<double(long long)> recursion = [&](long long k) ->double
+    {
+        if (k == 0)
+        {
+            return 1;
+        }
+        if (k == 1)
+        {
+            return x;
+        }
+        double ret = recursion(k >> 1);
+        return (k & 1) ? x * ret * ret : ret * ret;
+    };
+    double ans = recursion(N);
+    if (ans == 0) return 0;
+    return (n < 0) ? 1 / ans : ans;
+//*/
+
+//*
+    //快速幂法：(n/2都是整数除，可以用n>>1)--->非递归
+    //n为偶数：取f(n) = f(n/2)*f(n/2);
+    //n为奇数：取f(n) = x*f(n/2)*f(n/2);
+    long long N = abs((long long)n); //注意负数【-2^31】取绝对值的问题！！！
+    double ans = 1;
+    if (n == 0) return 1;
+    if (x == 0) return 0;
+    x = (n < 0) ? 1 / x : x;
+    while (N > 0)
+    {
+        if ((N & 1) == 1)
+        {
+            ans *= x;
+        }
+        x *= x;
+        N >>= 1;
+    }
+    return ans;
+//*/
+}
+
+//*********************************剑指 Offer 17. 打印从1到最大的n位数【dfs、字符串处理大数越界】
+/*
+//描述：
+vector<int> ans = printNumbers(nums);
+cout << ans << endl;
+//*/
+//*//*/
+vector<int> printNumbers(int n) 
+{
+/*
+    //不考虑大数越界
+    int max = pow(10, n) - 1;
+    return [&]() {vector<int>ans(max); for (int i = 0; i < max; ++i)ans[i] = i + 1; return ans; }();
+//*/
+
+//*
+    //实际上无论是 short / int / long ... 任意变量类型，数字的取值范围都是有限的。
+    //因此，大数的表示应用字符串 String 类型。
+    //dfs,从高位到低位依次排列[0, 9]
+    vector<char> ch = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };  
+    vector<int> ans;
+
+    auto addstring = [&](string str)
+    {
+        bool isBegin0 = true;
+        string tempStr = "";
+        string::iterator it = str.begin();
+        while (it != str.end())
+        {
+            if (isBegin0 && *it != '0') isBegin0 = false;
+            if (!isBegin0) {
+                tempStr += *it;
+            }
+            it++;
+        }
+        //从高位到低位全排列，要注意首字符为0时，tempStr为空，不能执行stoi
+        if (tempStr != "") {
+            int tempNum = stoi(tempStr);
+            ans.push_back(tempNum);
+        }
+    };
+
+
+    function<void(string&, int)> dfs = [&](string &str, int kk)
+    {
+        if (kk == n)
+        {
+            addstring(str);
+            return;
+        }
+
+        for (int i = 0; i < 10; ++i)
+        {
+            str[kk] = ch[i];
+            dfs(str, kk + 1);
+        }
+    };
+
+    string temp(n,'0');
+    for (int i = 0; i < 10; ++i)
+    {
+        temp[0] = ch[i];
+        dfs(temp, 1);
+    }
+    return ans;
+//*/
+}
+
+//*********************************剑指 Offer 18. 删除链表的节点【哑节点，双指针、递归】
+/*
+//描述：
+ListNode* head = new ListNode(1, &ListNode(2, &ListNode(3, &ListNode(4))));
+ListNode* ans = deleteNode(head, val);
+cout << ans << endl;
+//*/
+//*//*/
+ListNode* deleteNode(ListNode* head, int val) 
+{
+/*
+    //哑节点，双指针
+    ListNode* dummy = new ListNode(0,head);
+    ListNode* pre = dummy;
+    ListNode* now = head;
+    while (now != nullptr)
+    {
+        if (now->val == val)
+        {
+            pre->next = now->next;
+            break;
+        }
+        pre = pre->next;
+        now = now->next;
+    }
+    return dummy->next;
+//*/
+
+//*
+    //递归
+    if (head == nullptr)
+        return head;
+    if (head->val == val)
+        return head->next;
+    head->next = deleteNode(head->next, val);
+    return head;
+//*/
+
+}
+
+//*********************************剑指 Offer 19. 正则表达式匹配【动态规划】
+/*
+//描述：
+bool ans = isMatch("aa", ".*");
+cout << ans << endl;
+//*/
+//*//*/
+bool isMatch(string s, string p)
+{
+    int size_s = s.size();
+    int size_p = p.size();
+    //多开辟一个空间
+    //dp[0][0]用来放  空主串和  空正则串的匹配结果
+    //dp[i][0]用来放非空主串和  空正则串的匹配结果
+    //dp[0][j]用来放  空主串和非空正则串的匹配结果
+    //dp[i][j]用来放主串前i个字符和正则串前j个字符的匹配结果
+    vector<vector<bool>> dp(size_s + 1, vector<bool>(size_p + 1, 0));
+
+    for (int i = 0; i <= size_s; ++i)
+    {
+        for (int j = 0; j <= size_p; ++j)
+        {
+            if (j == 0)
+            {
+                //空正则串
+                //如果主串也为空：dp[0][0] = true;
+                //如果主串不为空：dp[i][0] = false;(i>0)
+                dp[i][j] = (i == 0);
+            }
+            else
+            {
+                //非空正则串
+                if (p[j - 1] != '*')
+                {
+                    //正则串当前为 字符 或 ‘.'
+                    if (i > 0 && (s[i - 1] == p[j - 1] || p[j - 1] == '.'))
+                    {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    }
+                }
+                else
+                {
+                    //正则串当前为‘*'，可以匹配0次和多次
+                    if (j >= 2)
+                    {
+                        //匹配零次
+                        dp[i][j] = dp[i][j] | dp[i][j - 2];
+                    }
+                    if (i >= 1 && j >= 2 && (s[i - 1] == p[j - 2] || p[j - 2] == '.'))
+                    {
+                        //匹配多次
+                        dp[i][j] = dp[i][j] | dp[i - 1][j];
+                    }
+                }
+            }
+        }
+    }
+    return dp[size_s][size_p];
+}
+
+//*********************************剑指 Offer 20. 表示数值的字符串【】
+/*
+//描述：
+bool ans = isNumber(string);
+cout << ans << endl;
+//*/
+//*//*/
+bool isNumber(string s)
+{
+
+    return true;
+}
+
+//*********************************剑指 Offer 21. 调整数组顺序使奇数位于偶数前面【双指针、类似快排】
+/*
+//描述：输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有奇数位于数组的前半部分，所有偶数位于数组的后半部分。
+vector<int> nums = {1,2,3,4};
+vector<int> ans = exchange(nums);
+cout << ans << endl;
+//*/
+//*//*/
+vector<int> exchange(vector<int>& nums)
+{
+    int n = nums.size();
+    if (n <= 1)
+    {
+        return nums;
+    }
+//*
+    //双指针，类似快排
+    int i = 0;
+    int j = n - 1;
+
+    while (i < j)
+    {
+        while ((nums[i] & 1) == 1 && i < j)
+        {
+            ++i;
+        }
+        while ((nums[j] & 1) == 0 && i < j)
+        {
+            --j;
+        }
+        if (i < j)
+        {
+            int t = nums[i];
+            nums[i] = nums[j];
+            nums[j] = t;
+        }
+    }
+    return nums;
+//*/
+
+}
+
+//*********************************剑指 Offer 22. 链表中倒数第k个节点【双指针、压栈后重组、递归】
+/*
+//描述：
+ListNode* head = new ListNode(1, &ListNode(2, &ListNode(3, &ListNode(4))));
+ListNode * ans = getKthFromEnd(head, 4);
+cout << ans->val << endl;
+//*/
+//*//*/
+ListNode* getKthFromEnd(ListNode* head, int k) 
+{
+ /*/
+    //双指针
+    ListNode* low = head;
+    ListNode* fast = head;
+    int i = 0;
+    while (fast != nullptr && i < k)
+    {
+        fast = fast->next;
+        ++i;
+    }
+
+    while (fast != nullptr)
+    {
+        low = low->next;
+        fast = fast->next;
+    }
+    return low;
+//*/
+
+//*
+    //递归
+    if (head == nullptr)
+    {
+        return head;
+    }
+    
+    ListNode* node = getKthFromEnd(head->next, k);
+
+    static int size = 0; //size在“递”时不计数，在“归”时计数
+    if (++size == k)
+    {
+        //在倒数第k个数时返回节点
+        //之后的node都等于这个head
+        return head;
+    }
+    return node;   
+//*/
+}
+
+//*********************************剑指 Offer 24. 反转链表【压栈后重组、双指针、递归】
+/*
+//描述：
+int ans = xxxx(nums);
+cout << ans << endl;
+//*/
+//*//*/
+ListNode* reverseList(ListNode* head) 
+{
+/*
+    //压栈后重组：时间O(n) 空间O(n)
+    if (head == nullptr)
+    {
+        return head;
+    }
+    stack<ListNode*> st;
+    while (head != nullptr)
+    {
+        st.push(head);
+        head = head->next;
+    }
+
+    ListNode* temp = nullptr;
+    ListNode* now = st.top();
+    st.pop();
+    head = now;
+    while (!st.empty())
+    {
+        temp = st.top();
+        st.pop();
+        now->next = temp;
+        now = temp;
+    }
+    now->next = nullptr;
+    return head;
+//*/
+
+/*
+    // 双指针
+    ListNode* ans = nullptr;
+    while (head != nullptr)
+    {
+        ListNode* temp = head->next;
+        head->next = ans;
+        ans = head;
+        head = temp;
+    }
+    return ans;
+//*/
+
+/*
+    // 双指针
+    ListNode* cur = head;
+    while (head->next != nullptr)
+    {
+        ListNode* temp = head->next->next;
+        head->next->next = cur;
+        cur = head->next;
+        head->next = temp;
+    }
+    return cur;
+//*/
+
+//*
+    //递归(简洁版，自己画图）
+    if (head == nullptr || head->next == nullptr)
+    {
+        return head;
+    }
+    ListNode* ret = reverseList(head->next);
+    head->next->next = head;
+    head->next = nullptr;
+    return ret;
+//*/
+
+}
+
+//*********************************剑指 Offer 25. 合并两个排序的链表【哑节点、递归】
+/*
+//描述：
+ListNode* head1 = new ListNode(1, &ListNode(2, &ListNode(4)));
+ListNode* head2 = new ListNode(1, &ListNode(3, &ListNode((4))));
+ListNode* ans = mergeTwoLists(head1, head2);
+cout << ans << endl;
+//*/
+//*//*/
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) 
+{
+/*
+    //哑节点
+    ListNode* dummy = new ListNode(0);
+    ListNode* cur = dummy;
+    while (l1 != nullptr && l2 != nullptr)
+    {
+        if (l1->val < l2->val)
+        {
+            cur->next = l1;
+            l1 = l1->next;
+        }
+        else
+        {
+            cur->next = l2;     
+            l2 = l2->next;
+        }
+        cur = cur->next;
+    }
+    cur->next = (l1 != nullptr) ? l1 : l2;
+    return dummy->next;
+//*/
+
+//*
+    //递归
+    if (l1 == nullptr)
+    {
+        return l2;
+    }
+    if (l2 == nullptr)
+    {
+        return l1;
+    }
+    if (l1->val < l2->val)
+    {
+        l1->next = mergeTwoLists(l1->next ,l2);
+        return l1;
+    }
+    else
+    {
+        l2->next = mergeTwoLists(l1, l2->next);
+        return l2;
+    }
+//*/
+}
+
+//*********************************剑指 Offer 26. 树的子结构【】
+/*
+//描述：
+TreeNode* tree1 = new TreeNode
+bool ans = isSubStructure(nums);
+cout << ans << endl;
+//*/
+//*//*/
+bool isSubStructure(TreeNode* A, TreeNode* B) 
+{
+    if (A == nullptr || B == nullptr)
+    {
+        return false;
+    }
+//*
+
+//*/
+    return true;
 }
 
 //*********************************【】

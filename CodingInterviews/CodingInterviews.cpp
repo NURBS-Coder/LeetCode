@@ -4,9 +4,31 @@
 #include <iostream>
 #include "Solution.hpp"
 
+template <class Type>
+ostream& operator << (ostream& os, const vector<Type>& c)
+{
+    for (auto iter = c.begin(); iter != c.end(); ++iter)
+    {
+        cout << *iter << endl;
+    }
+    return os;
+}
+
+ostream& operator << (ostream& os, const ListNode* c)
+{
+    while (c != nullptr)
+    {
+        cout << c->val << endl;
+        c = c->next;
+    }
+    return os;
+}
+
 int main()
 {
-    int ans = cuttingRope(1000);
+    TreeNode* tree1 = new TreeNode(3, &TreeNode(4, &TreeNode(1), &TreeNode(2)), &TreeNode(5));
+    TreeNode* tree2 = new TreeNode(4, &TreeNode(1));
+    bool ans = isSubStructure(tree1, tree2);
     cout << ans << endl;
     
     return 0;
